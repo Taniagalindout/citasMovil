@@ -12,7 +12,7 @@ export default function Navigation() {
   return (
     <NavigationContainer>
       <Drawer.Navigator
-      initialRouteName="login"
+      initialRouteName="citas"
         screenOptions={{
           drawerActiveTintColor: "#094670",
           drawerInactiveTintColor: "gray",
