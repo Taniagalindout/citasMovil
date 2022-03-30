@@ -6,7 +6,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import Navigation from "./Navigation";
 import Citas from "../screens/Citas";
 const Stack = createStackNavigator();
-export default function LoginStack() {
+export default function LoginStack(props) {
+    const {setReload} = props
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="loginStack" screenOptions={{}}>
@@ -14,6 +15,7 @@ export default function LoginStack() {
           name="loginStack"
           component={Login}
           options={{ title: "Iniciar sesión" }}
+          initialParams={{setReload:setReload}}
         />
       </Stack.Navigator>
     </NavigationContainer>

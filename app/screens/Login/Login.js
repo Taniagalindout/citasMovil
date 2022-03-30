@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { Button, Image, Icon } from "react-native-elements";
 import * as Google from "expo-google-app-auth";
 import Navigation from "../../navigation/Navigation";
-import { AsyncStorage } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 export default function Login(props) {
-  const { navigation} = props;
+  console.log("dentro del login",props);
+  const { navigation, route} = props;
+  const {setReload} = route.params
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const handleGoogleSignin = () => {
     setGoogleSubmitting(true);
