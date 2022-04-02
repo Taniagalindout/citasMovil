@@ -3,16 +3,27 @@ import "react-native-gesture-handler";
 import LoginStack from "./app/navigation/LoginStack";
 import Navigation from "./app/navigation/Navigation";
 import * as Google from 'expo-google-app-auth'; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   const [existSession, setExistSession] = useState(false)
-  const [reload, setReload] = useState()
+
   useEffect(() =>{
     console.log("si entro al effect");
     //aqui va la obtención con async storage
-    setReload(false)
-  },[reload])
+    const getData = async () =>{
+      try{
+        const savedDates = await AsyncStorage.getItem('@sigcita');
+        console.log(savedDates);
+        if (savedDates == null) throw new Error("Error2")
+        else return savedDates
+      }catch(err){
+        console.log("Error", err);
+      }
+    }
+    getData();
 
-  
-  return existSession ? <Navigation /> : <LoginStack setReload={setReload} />
+  },[existSession])
+
+  return existSession ? <Navigation /> : <LoginStack setExistSession={setExistSession} />
 }

@@ -2,14 +2,14 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { Button, Image, Icon } from "react-native-elements";
 import * as Google from "expo-google-app-auth";
-import Navigation from "../../navigation/Navigation";
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import GoogleButton from "react-google-button";
 export default function Login(props) {
-  console.log("dentro del login",props);
-  const { navigation, route} = props;
-  const {setReload} = route.params
+  //console.log("dentro del login", props);
+  const { navigation, route } = props;
+  const { setExistSession } = route.params;
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
-  const handleGoogleSignin = () => {
+  const handleGoogleSignin = async () => {
     setGoogleSubmitting(true);
     const config = {
       iosClientId: `201170760326-oj9j1b9ksm9c3knhlajr9a7aop59o2s3.apps.googleusercontent.com`,
@@ -20,10 +20,11 @@ export default function Login(props) {
       .then((result) => {
         const { type, user } = result;
         if (type == "success") {
-          console.log("Inicio de sesion correctamente");
-          console.log(result);
-          console.log(user);
-         
+          console.log("Inicio de sesion correctamente");  
+           storeData(user);
+           setExistSession(true)
+          //console.log(result);
+          //console.log(user);
         } else {
           console.log("Inicio de sesión cancelado");
         }
@@ -35,9 +36,17 @@ export default function Login(props) {
         setGoogleSubmitting(false);
       });
   };
+  const storeData = async (value) =>{
+    try{
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem('@sigcita', jsonValue)
+    }catch (e){
+      console.log("Error en setItem");
+    }
+  }
 
   return (
-    <View>
+    <View style={styles.container}>
       <Image
         source={require("../../../assets/sigcita.png")}
         resizeMode="contain"
@@ -46,14 +55,27 @@ export default function Login(props) {
       <Button
         title={"Iniciar sesión con Google"}
         onPress={handleGoogleSignin}
-        icon={<Icon type="fontisto" name="google" color="#FFF" style={styles.icon} />}
+        icon={
+          <Icon
+            type="fontisto"
+            name="google"
+            color="#FF0000"
+            style={styles.icon}
+          />
+        }
         buttonStyle={styles.btnbg}
+        titleStyle={{color: "danger"}}
+        type="outline"
+        titleStyle={{ color: 'rgba(78, 116, 289, 1)' }}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container:{
+    backgroundColor: "#FFF"
+  },
   img: {
     width: "100%",
     height: 150,
@@ -61,12 +83,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   btnbg: {
-    backgroundColor: "#009475",
-    borderRadius: 3.84,
+    borderRadius: 3,
     marginLeft: 15,
-    marginRight: 15
+    marginRight: 15,
+    
   },
-  icon:{
-    marginRight: 10
-  }
+  icon: {
+    marginRight: 10,
+  },
 });

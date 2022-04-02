@@ -7,7 +7,7 @@ import Navigation from "./Navigation";
 import Citas from "../screens/Citas";
 const Stack = createStackNavigator();
 export default function LoginStack(props) {
-    const {setReload} = props
+    const {setExistSession} = props
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="loginStack" screenOptions={{}}>
@@ -15,7 +15,7 @@ export default function LoginStack(props) {
           name="loginStack"
           component={Login}
           options={{ title: "Iniciar sesión" }}
-          initialParams={{setReload:setReload}}
+          initialParams={{setExistSession: setExistSession}}
         />
       </Stack.Navigator>
     </NavigationContainer>
