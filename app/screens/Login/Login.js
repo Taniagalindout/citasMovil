@@ -9,7 +9,9 @@ export default function Login(props) {
   const { navigation, route } = props;
   const { setExistSession } = route.params;
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
   const handleGoogleSignin = async () => {
+
     setGoogleSubmitting(true);
     const config = {
       iosClientId: `201170760326-oj9j1b9ksm9c3knhlajr9a7aop59o2s3.apps.googleusercontent.com`,
@@ -18,13 +20,11 @@ export default function Login(props) {
     };
     Google.logInAsync(config)
       .then((result) => {
-        const { type, user } = result;
+        const { type, user} = result;
         if (type == "success") {
+          storeData(user);
+          setExistSession(true)
           console.log("Inicio de sesion correctamente");  
-           storeData(user);
-           setExistSession(true)
-          //console.log(result);
-          //console.log(user);
         } else {
           console.log("Inicio de sesión cancelado");
         }

@@ -65,8 +65,6 @@ export default function Navigation() {
               />
             ),
             title: "Salir",
-            
-            
           }}
         />
       </Drawer.Navigator>
