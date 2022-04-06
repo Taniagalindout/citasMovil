@@ -23,21 +23,6 @@ export default function Navigation() {
         }}
       >
         <Drawer.Screen
-          name="login"
-          component={Login}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                type="material-community"
-                name="arrow-right"
-                size={16}
-                color="#094670"
-              />
-            ),
-            title: "Iniciar sesión",
-          }}
-        />
-        <Drawer.Screen
           name="citas"
           component={Citas}
           options={{

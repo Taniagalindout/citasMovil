@@ -52,6 +52,7 @@ export default function Login(props) {
         resizeMode="contain"
         style={styles.img}
       />
+      <Text style={styles.title}>Sistema de Gestión de Portafolio Docente</Text>
       <Button
         title={"Iniciar sesión con Google"}
         onPress={handleGoogleSignin}
@@ -74,7 +75,8 @@ export default function Login(props) {
 
 const styles = StyleSheet.create({
   container:{
-    backgroundColor: "#FFF"
+    backgroundColor: "#FFF",
+    flex: 1
   },
   img: {
     width: "100%",
@@ -82,13 +84,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
   },
+
+  title: {
+    marginLeft: 50
+  },
   btnbg: {
     borderRadius: 3,
-    marginLeft: 15,
-    marginRight: 15,
-    
+    marginLeft: 80,
+    marginTop: 20,
+    width: "50%",
   },
   icon: {
     marginRight: 10,
   },
+
 });
