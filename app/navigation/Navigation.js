@@ -6,6 +6,7 @@ import { Icon } from "react-native-elements";
 import Citas from "../screens/Citas";
 import Logout from "../screens/Logout";
 import Login from "../screens/Login/Login";
+import CitasConfirm from "../screens/Citas/CitasConfirm";
 const Drawer = createDrawerNavigator();
 
 export default function Navigation() {
@@ -50,6 +51,21 @@ export default function Navigation() {
               />
             ),
             title: "Salir",
+          }}
+        />
+         <Drawer.Screen
+          name="citasConfirm"
+          component={CitasConfirm}
+          options={{
+            drawerIcon: ({ focused, size }) => (
+              <Icon
+                type="material-community"
+                name="arrow-right"
+                size={16}
+                color="#094670"
+              />
+            ),
+            title: "Citas confirm",
           }}
         />
       </Drawer.Navigator>

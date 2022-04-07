@@ -3,8 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Input, Icon } from "react-native-elements";
 import * as Calendar from "expo-calendar";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
-import { isEmpty, min } from "lodash";
-export default function Citas() {
+import { isEmpty, min, set } from "lodash";
+import Modal from "../../util/Modal";
+import { useNavigation } from "@react-navigation/native";
+export default function Citas(props) {
+  const navigation = useNavigation()
+  const [modal, setModal]= useState(false)
+
   useEffect(() => {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
@@ -59,6 +64,9 @@ export default function Citas() {
         : formatDate.getMinutes();
     setDate((it) => it + "T" + hour + minute);
     setText((it) => it + " " + hour + minute);
+    setModal(true)
+    closeOverlay()
+
   };
 
   const showMode = (currentMode) => {
@@ -86,6 +94,9 @@ export default function Citas() {
     //   }
     // }
   }, []);
+  const closeOverlay = () => {
+    setModal(false)
+  }
 
   async function getAndroidCal() {
     console.log(typeof date);
@@ -96,20 +107,20 @@ export default function Citas() {
     console.log("Second", stDateF);
     console.log("PrimaryCalendar", primaryCalendar);
     const event = await Calendar.createEventAsync(primaryCalendar, {
-      title: "Revision de portafolio" + formData.name,
+      title: "Revision de portafolio " + formData.name,
       startDate: stDate,
       endDate: stDateF,
       accessLevel: "public",
     });
     console.log(`Evento creado ${event}`);
-    const attendes = await Calendar.createAttendeeAsync(`${event}`, {
-      email: formData.emailadmin,
-      role: "attende",
-      type: "required",
-      status: "accepted",
-    });
-    getEvents(event, date.split("T")[0]);
-    console.log("Invitado creado", attendes);
+      const attendes = await Calendar.createAttendeeAsync(`${event}`, {
+        email: formData.emailadmin,
+        role: "attende",
+        type: "required",
+        status: "accepted",
+      });
+      getEvents(event, date.split("T")[0]);
+      console.log("Invitado creado", attendes);
   }
   async function getEvents(id, f) {
     try {
@@ -119,14 +130,8 @@ export default function Citas() {
       console.log("Error para obtrener los eventos", error);
     }
   }
-  async function deleteCalendars() {
-    try {
-      await Calendar.deleteCalendarAsync("9", {});
-      console.log("Calendario eliminado");
-    } catch (error) {
-      console.log("Error al eliminar calendario", error);
-    }
-  }
+
+
   return (
     <View style={styles.container}>
       <Card>
@@ -149,7 +154,7 @@ export default function Citas() {
           rightIcon={
             <Icon
               type="material-community"
-              name="account"
+              name="email"
               size={20}
               color="#094670"
             />
@@ -165,11 +170,53 @@ export default function Citas() {
           title={"Seleccionar fecha"}
           onPress={() => showMode("date")}
           style={{ marginTop: 20 }}
+          icon={{
+            name:"calendar",
+            type:"material-community",
+            size:20,
+            color:"#FFF",
+          }
+        }
+        iconContainerStyle={{ marginRight: 10 }}
+        titleStyle={{ fontWeight: '700' }}
+        buttonStyle={{
+          backgroundColor: "#009574",
+          borderColor: 'transparent',
+          borderWidth: 0,
+          borderRadius: 30,
+        }}
+        containerStyle={{
+          width: 200,
+          marginHorizontal: 50,
+          marginVertical: 10,
+        }}
         />
         <Button
           title={"Seleccionar hora"}
           onPress={() => showMode("time")}
           style={{ marginTop: 20 }}
+          icon={{
+            name:"clock-outline",
+            type:"material-community",
+            size:20,
+            color:"#FFF",
+          }
+              
+        }
+        iconContainerStyle={{ marginRight: 10 }}
+        titleStyle={{ fontWeight: '700' }}
+        buttonStyle={{
+          backgroundColor: "#009574",
+          borderColor: 'transparent',
+          borderWidth: 0,
+          borderRadius: 30,
+        }}
+        containerStyle={{
+          width: 200,
+          marginHorizontal: 50,
+          marginVertical: 10,
+          marginBottom: 10
+        }}
         />
       </Card>
       {show && (
@@ -183,10 +230,32 @@ export default function Citas() {
         />
       )}
 
-      <Button title={"Crear evento"} onPress={getAndroidCal} />
-      <Button title={"Obtener evento"} onPress={getEvents} />
-      <Button title={"Obtener Calendarips"} />
-      <Button title={"Eliminar"} onPress={deleteCalendars} />
+      <Button title={"Crear evento"} onPress={getAndroidCal} 
+         icon={{
+           name:"calendar",
+           type:"material-community",
+           size:20,
+           color:"#FFF",
+         }
+       }
+       iconContainerStyle={{ marginRight: 10 }}
+       titleStyle={{ fontWeight: '700' }}
+       buttonStyle={{
+         backgroundColor: "#094670",
+         borderColor: 'transparent',
+         borderWidth: 0,
+         borderRadius: 30,
+
+       }}
+       containerStyle={{
+         width: 200,
+         marginTop: 30
+      
+       }}
+      />
+      
+      <Modal isVisible={modal} text = "Creando evento en Google Calendar"/>
+
     </View>
   );
 }
@@ -195,5 +264,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     flex: 1,
+    alignItems: "center"
   },
 });

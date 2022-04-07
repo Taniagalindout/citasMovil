@@ -47,7 +47,6 @@ export default function Login(props) {
 
   return (
     <View style={styles.container}>
-      <Card style={styles.container}>
       <Image
         source={require("../../../assets/sigcita.png")}
         resizeMode="contain"
@@ -70,15 +69,13 @@ export default function Login(props) {
         type="outline"
         titleStyle={{ color: 'rgba(78, 116, 289, 1)' }}
       />
-      </Card>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container:{
-    backgroundColor: "#094670",
+    backgroundColor: "#adadad",
     flex: 1
   },
   img: {
