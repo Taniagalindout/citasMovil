@@ -7,15 +7,23 @@ import Navigation from "./Navigation";
 import Citas from "../screens/Citas";
 const Stack = createStackNavigator();
 export default function LoginStack(props) {
-    const {setExistSession} = props
+  const { setExistSession } = props;
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="loginStack" screenOptions={{}}>
+      <Stack.Navigator
+        initialRouteName="loginStack"
+        screenOptions={{
+          headerStyle: { backgroundColor: "#094670" },
+          headerTitleStyle: {
+            color: "white",
+          },
+        }}
+      >
         <Stack.Screen
           name="loginStack"
           component={Login}
           options={{ title: "Iniciar sesión" }}
-          initialParams={{setExistSession: setExistSession}}
+          initialParams={{ setExistSession: setExistSession }}
         />
       </Stack.Navigator>
     </NavigationContainer>

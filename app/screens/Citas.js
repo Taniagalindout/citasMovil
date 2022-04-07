@@ -3,63 +3,130 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Input, Icon } from "react-native-elements";
 import * as Calendar from "expo-calendar";
 import DateTimePickerAndroid from "@react-native-community/datetimepicker";
-
+import { isEmpty, min } from "lodash";
 export default function Citas() {
-  //Permisos para acceder a Google calendar
-  async function getCalendars() {
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === "granted") {
-      const calendars = await Calendar.getCalendarsAsync();
-      Calendar.EntityTypes.EVENT;
-      console.log("Here are all your calendars:");
-      console.log({ calendars });
-    }
-  }
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === "granted") {
+        const calendars = await Calendar.getCalendarsAsync(
+          Calendar.EntityTypes.EVENT
+        );
+      }
+    })();
+  }, []);
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
-  const [selDate,setSelDate] = useState('')
-  const [date, setDate]
-  const onChange = (event, selectedDate) => {
-    setSelDate(`${newDate.getFullYear()}-0${newDate.getMonth()}-0${newDate.getDay()}`)
-    console.log("Fecha selDate"+ selDate);
-
+  const [selDate, setSelDate] = useState("");
+  const [date, setDate] = useState();
+  const [text, setText] = useState("Empty");
+  const [formData, setFormData] = useState({
+    name: "",
+    emailadmin: "",
+  });
+  const [error, setError] = useState({ name: "", emailadmin: "" });
+  const [primaryCalendar, setPrimaryCalendar] = useState("");
+  const change = (event, type) => {
+    setFormData({ ...formData, [type]: event.nativeEvent.text });
   };
-
-  async function getAndroidCal() {
-    console.log("mi textyo", selDate);
-    var androidCalendar;
-    var foundCal = false;
-    var androidCalendars = await Calendar.getCalendarsAsync();
-    for (var x = 0; x < androidCalendars.length; x++) {
-      if (androidCalendars[x]["source"]["type"] == "com.google") {
-        foundCal = true;
-        androidCalendar = androidCalendars[x]["id"];
-        var nombre = " Erick Mireles Merchant";
-        const newEvent = await Calendar.createEventAsync(androidCalendar, {
-          title: "Revision de portafolio " + nombre,
-          startDate: new Date(selDate),
-          endDate: new Date(selDate),
-          accessLevel: "public",
-        });
-        console.log(`Event was created., ${newEvent}`);
-        const resppuesta = await Calendar.createAttendeeAsync(`${newEvent}`, {
-          email: "taniagalindo887@gmail.com",
-          role: "attende",
-          type: "required",
-          status: "accepted",
-        });
-        console.log("Invitado creado");
-        break;
-      }
-    }
-    return androidCalendar;
-  }
+  const onChangeDate = (event, selectDate) => {
+    const currentDate = selectDate || new Date();
+    setShow(Platform.OS === "ios");
+    let formatDate = new Date(selectDate);
+    let da =
+      formatDate.getDate() < 10
+        ? "0" + formatDate.getDate()
+        : formatDate.getDate();
+    let mo =
+      formatDate.getMonth() + 1 < 10
+        ? "0" + (formatDate.getMonth() + 1)
+        : formatDate.getMonth() + 1;
+    let ye = formatDate.getFullYear();
+    setDate(ye + "-" + mo + "-" + da);
+    setText(da + "-" + mo + "-" + ye);
+  };
+  const onChangeTme = (event, time) => {
+    setShow(Platform.OS === "ios");
+    console.log("time: ", time);
+    let formatDate = new Date(time);
+    let hour =
+      formatDate.getHours() < 10
+        ? "0" + formatDate.getHours() + ":"
+        : formatDate.getHours + ":"();
+    let minute =
+      formatDate.getMinutes() < 10
+        ? "0" + formatDate.getMinutes()
+        : formatDate.getMinutes();
+    setDate((it) => it + "T" + hour + minute);
+    setText((it) => it + " " + hour + minute);
+  };
 
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
   };
 
+  useEffect(() => {
+    Calendar.getCalendarsAsync().then((calendars) => {
+      calendars.map((item) => {
+        if (item.accessLevel === "owner" && item.id !== "1") {
+          setPrimaryCalendar(item.id);
+          console.log(item.id);
+          return;
+        }
+      });
+    });
+    // var androidCalendars = await Calendar.getCalendarsAsync();
+    // for (var x = 0; x < androidCalendars.length; x++) {
+    //   console.log(androidCalendars[x]);
+    //   if (androidCalendars[x]["accessLevel"] == "owner" && ["id"] !=="1") {
+    //     setPrimaryCalendar(androidCalendars[x]["id"]);
+    //     console.log(androidCalendars[x]["id"]);
+    //     break;
+    //   }
+    // }
+  }, []);
+
+  async function getAndroidCal() {
+    console.log(typeof date);
+    let stDate = new Date(date);
+    let stDateF = new Date(stDate);
+    stDateF.setMinutes(stDate.getMinutes() + 15);
+    console.log("First", stDate);
+    console.log("Second", stDateF);
+    console.log("PrimaryCalendar", primaryCalendar);
+    const event = await Calendar.createEventAsync(primaryCalendar, {
+      title: "Revision de portafolio" + formData.name,
+      startDate: stDate,
+      endDate: stDateF,
+      accessLevel: "public",
+    });
+    console.log(`Evento creado ${event}`);
+    const attendes = await Calendar.createAttendeeAsync(`${event}`, {
+      email: formData.emailadmin,
+      role: "attende",
+      type: "required",
+      status: "accepted",
+    });
+    getEvents(event, date.split("T")[0]);
+    console.log("Invitado creado", attendes);
+  }
+  async function getEvents(id, f) {
+    try {
+      const event = await Calendar.getEventAsync(id, f);
+      console.log(event);
+    } catch (error) {
+      console.log("Error para obtrener los eventos", error);
+    }
+  }
+  async function deleteCalendars() {
+    try {
+      await Calendar.deleteCalendarAsync("9", {});
+      console.log("Calendario eliminado");
+    } catch (error) {
+      console.log("Error al eliminar calendario", error);
+    }
+  }
   return (
     <View style={styles.container}>
       <Card>
@@ -74,6 +141,8 @@ export default function Citas() {
             />
           }
           label="Nombre del docente: *"
+          onChange={(event) => change(event, "name")}
+          errorMessage={error.name}
         />
         <Input
           placeholder="email@utez.edu.mx"
@@ -86,28 +155,38 @@ export default function Citas() {
             />
           }
           label="Correo electronico del administrador: *"
+          onChange={(event) => change(event, "emailadmin")}
+          errorMessage={error.emailadmin}
         />
-        
-        <Text>{setSelDate}</Text>
+        <Text>Cita para revisión de portafolio docente: </Text>
+        <Text>Fecha y hora: </Text>
+        <Text>{text}</Text>
         <Button
           title={"Seleccionar fecha"}
           onPress={() => showMode("date")}
           style={{ marginTop: 20 }}
         />
+        <Button
+          title={"Seleccionar hora"}
+          onPress={() => showMode("time")}
+          style={{ marginTop: 20 }}
+        />
       </Card>
-
       {show && (
         <DateTimePickerAndroid
-          value={date}
+          value={new Date()}
           testID="datetimePicker"
           mode={mode}
           is24Hour={true}
           display="default"
-          onChange={onChange}
+          onChange={mode === "date" ? onChangeDate : onChangeTme}
         />
       )}
 
       <Button title={"Crear evento"} onPress={getAndroidCal} />
+      <Button title={"Obtener evento"} onPress={getEvents} />
+      <Button title={"Obtener Calendarips"} />
+      <Button title={"Eliminar"} onPress={deleteCalendars} />
     </View>
   );
 }

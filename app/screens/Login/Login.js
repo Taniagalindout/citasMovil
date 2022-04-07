@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
-import { Button, Image, Icon } from "react-native-elements";
+import { Button, Image, Icon, Card } from "react-native-elements";
 import * as Google from "expo-google-app-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import GoogleButton from "react-google-button";
@@ -47,6 +47,7 @@ export default function Login(props) {
 
   return (
     <View style={styles.container}>
+      <Card style={styles.container}>
       <Image
         source={require("../../../assets/sigcita.png")}
         resizeMode="contain"
@@ -69,13 +70,15 @@ export default function Login(props) {
         type="outline"
         titleStyle={{ color: 'rgba(78, 116, 289, 1)' }}
       />
+      </Card>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container:{
-    backgroundColor: "#FFF",
+    backgroundColor: "#094670",
     flex: 1
   },
   img: {
@@ -89,13 +92,14 @@ const styles = StyleSheet.create({
     marginLeft: 50
   },
   btnbg: {
-    borderRadius: 3,
-    marginLeft: 80,
-    marginTop: 20,
-    width: "50%",
+    borderRadius: 5,
+   
+    width: 300,
   },
   icon: {
     marginRight: 10,
   },
-
+  containercard:{
+    backgroundColor: "#094670"
+  }
 });
